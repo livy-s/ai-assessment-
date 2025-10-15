@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Knowledge Assessment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #ddd6fe 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 32px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .content {
+            padding: 32px;
+        }
+        
+        .progress-bar {
+            background: #e5e7eb;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        
+        .progress-fill {
+            background: #4f46e5;
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+        
+        .category-badge {
+            display: inline-block;
+            background: #e0e7ff;
+            color: #4338ca;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        
+        .question {
+            font-size: 24px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 24px;
+        }
+        
+        .option {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .option:hover {
+            border-color: #4f46e5;
+            background: #eef2ff;
+        }
+        
+        .option-circle {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #d1d5db;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        
+        .option:hover .option-circle {
+            border-color: #4f46e5;
+        }
+        
+        .option-text {
+            color: #374151;
+            flex: 1;
+        }
+        
+        .results {
+            text-align: center;
+        }
+        
+        .results-icon {
+            width: 80px;
+            height: 80px;
+            background: #e0e7ff;
+            border-radius: 50%;
+            margin: 0 auto 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+        
+        .results h1 {
+            font-size: 32px;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+        
+        .results-subtitle {
+            color: #6b7280;
+            margin-bottom: 32px;
+        }
+        
+        .level-card {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 32px;
+        }
+        
+        .level-label {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .level-title {
+            font-size: 40px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .level-description {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .level-score {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            font-size: 14px;
+        }
+        
+        .recommendations h3 {
+            font-size: 20px;
+            color: #111827;
+            margin-bottom: 16px;
+        }
+        
+        .recommendation {
+            display: flex;
+            gap: 12px;
+            background: #f9fafb;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .rec-number {
+            width: 24px;
+            height: 24px;
+            background: #e0e7ff;
+            color: #4338ca;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        
+        .rec-text {
+            color: #374151;
+            flex: 1;
+        }
+        
+        .button {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 24px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .button:hover {
+            background: #4338ca;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div id="quiz-section">
+                <div class="header">
+                    <h1>AI Knowledge Assessment</h1>
+                    <p>Discover your AI proficiency level</p>
+                </div>
+                
+                <div class="content">
+                    <div class="progress-text">
+                        <span id="question-number">Question 1 of 8</span>
+                        <span id="progress-percent">0% Complete</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    
+                    <div class="category-badge" id="category"></div>
+                    <h2 class="question" id="question"></h2>
+                    
+                    <div id="options"></div>
+                </div>
+            </div>
+            
+            <div id="results-section" class="hidden">
+                <div class="content results">
+                    <div class="results-icon">✓</div>
+                    <h1>Assessment Complete!</h1>
+                    <p class="results-subtitle">Here's your AI knowledge profile</p>
+                    
+                    <div class="level-card">
+                        <p class="level-label">Your Level</p>
+                        <h2 class="level-title" id="level"></h2>
+                        <p class="level-description" id="description"></p>
+                        <p class="level-score" id="score"></p>
+                    </div>
+                    
+                    <div class="recommendations">
+                        <h3>Recommended Training Path</h3>
+                        <div id="recommendations-list"></div>
+                    </div>
+                    
+                    <button class="button" onclick="restart()">
+                        ↻ Retake Assessment
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                category: "Fundamentals",
+                question: "How would you describe AI (Artificial Intelligence)?",
+                options: [
+                    { text: "I'm not sure what AI is", points: 0 },
+                    { text: "Technology that makes computers seem smart", points: 1 },
+                    { text: "Systems that can learn from data and make decisions", points: 2 },
+                    { text: "Machine learning, deep learning, and neural networks working together", points: 3 }
+                ]
+            },
+            {
+                category: "Practical Knowledge",
+                question: "Which AI tools or applications have you used?",
+                options: [
+                    { text: "None that I know of", points: 0 },
+                    { text: "Basic tools like voice assistants or autocomplete", points: 1 },
+                    { text: "ChatGPT, Copilot, or similar generative AI tools", points: 2 },
+                    { text: "Multiple AI tools for various tasks (writing, coding, analysis, etc.)", points: 3 }
+                ]
+            },
+            {
+                category: "Technical Understanding",
+                question: "What is a Large Language Model (LLM)?",
+                options: [
+                    { text: "Not familiar with this term", points: 0 },
+                    { text: "A type of AI that works with text", points: 1 },
+                    { text: "AI trained on massive text data to understand and generate language", points: 2 },
+                    { text: "Neural networks using transformer architecture trained on billions of parameters", points: 3 }
+                ]
+            },
+            {
+                category: "Practical Application",
+                question: "How comfortable are you writing prompts for AI tools?",
+                options: [
+                    { text: "I haven't tried", points: 0 },
+                    { text: "I can ask basic questions", points: 1 },
+                    { text: "I can craft detailed prompts with context and examples", points: 2 },
+                    { text: "I use advanced techniques like chain-of-thought and role-based prompting", points: 3 }
+                ]
+            },
+            {
+                category: "Concepts",
+                question: "What does 'training' an AI model mean?",
+                options: [
+                    { text: "Not sure", points: 0 },
+                    { text: "Teaching the AI to do tasks", points: 1 },
+                    { text: "Using data to help AI learn patterns and make predictions", points: 2 },
+                    { text: "Optimizing model parameters through backpropagation and gradient descent", points: 3 }
+                ]
+            },
+            {
+                category: "Ethics & Limitations",
+                question: "What are your concerns about AI limitations?",
+                options: [
+                    { text: "I haven't thought about limitations", points: 0 },
+                    { text: "I know AI can make mistakes", points: 1 },
+                    { text: "I'm aware of biases, hallucinations, and privacy concerns", points: 2 },
+                    { text: "I understand model limitations, data quality issues, and mitigation strategies", points: 3 }
+                ]
+            },
+            {
+                category: "Implementation",
+                question: "Have you implemented or integrated AI in projects?",
+                options: [
+                    { text: "No experience", points: 0 },
+                    { text: "I've explored how AI might be used", points: 1 },
+                    { text: "I've used AI APIs or no-code tools in projects", points: 2 },
+                    { text: "I've built custom AI solutions or fine-tuned models", points: 3 }
+                ]
+            },
+            {
+                category: "Industry Knowledge",
+                question: "How familiar are you with current AI trends and developments?",
+                options: [
+                    { text: "Not following AI news", points: 0 },
+                    { text: "I've heard about ChatGPT and major announcements", points: 1 },
+                    { text: "I follow AI developments and understand recent advances", points: 2 },
+                    { text: "I track multiple AI research areas and emerging capabilities", points: 3 }
+                ]
+            }
+        ];
+
+        let currentQuestion = 0;
+        let answers = [];
+
+        function loadQuestion() {
+            const q = questions[currentQuestion];
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            
+            document.getElementById('question-number').textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+            document.getElementById('progress-percent').textContent = `${Math.round(progress)}% Complete`;
+            document.getElementById('progress-fill').style.width = progress + '%';
+            document.getElementById('category').textContent = q.category;
+            document.getElementById('question').textContent = q.question;
+            
+            const optionsDiv = document.getElementById('options');
+            optionsDiv.innerHTML = '';
+            
+            q.options.forEach((option, index) => {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.onclick = () => selectAnswer(option.points);
+                div.innerHTML = `
+                    <div class="option-circle"></div>
+                    <div class="option-text">${option.text}</div>
+                `;
+                optionsDiv.appendChild(div);
+            });
+        }
+
+        function selectAnswer(points) {
+            answers.push(points);
+            
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            const totalPoints = answers.reduce((sum, p) => sum + p, 0);
+            const maxPoints = questions.length * 3;
+            const percentage = (totalPoints / maxPoints) * 100;
+            
+            let level, description, recommendations;
+            
+            if (percentage < 25) {
+                level = "Beginner";
+                description = "You're new to AI and just starting your learning journey.";
+                recommendations = [
+                    "Start with 'Introduction to AI' courses covering basic concepts",
+                    "Experiment with user-friendly AI tools like ChatGPT or Microsoft Copilot",
+                    "Watch beginner-friendly videos explaining AI in simple terms",
+                    "Learn about AI applications in your industry",
+                    "Focus on understanding what AI can and cannot do"
+                ];
+            } else if (percentage < 50) {
+                level = "Foundation";
+                description = "You have basic AI awareness and some hands-on experience.";
+                recommendations = [
+                    "Take courses on prompt engineering and effective AI interaction",
+                    "Learn about different types of AI (machine learning, NLP, computer vision)",
+                    "Explore AI ethics, biases, and responsible AI practices",
+                    "Practice using AI tools for real work tasks",
+                    "Study case studies of AI implementation in organizations"
+                ];
+            } else if (percentage < 75) {
+                level = "Intermediate";
+                description = "You have solid AI knowledge and practical experience.";
+                recommendations = [
+                    "Dive into machine learning fundamentals and algorithms",
+                    "Learn about model training, evaluation, and deployment",
+                    "Explore AI APIs and integration techniques",
+                    "Study advanced prompt engineering and AI workflow design",
+                    "Take courses on AI strategy and organizational implementation",
+                    "Consider specializing in a specific AI domain (NLP, computer vision, etc.)"
+                ];
+            } else {
+                level = "Advanced";
+                description = "You have comprehensive AI knowledge and hands-on expertise.";
+                recommendations = [
+                    "Deepen technical skills in deep learning and neural architectures",
+                    "Explore cutting-edge research and emerging AI techniques",
+                    "Learn about fine-tuning, model optimization, and MLOps",
+                    "Study AI governance, compliance, and risk management",
+                    "Consider contributing to AI projects or mentoring others",
+                    "Stay current with latest developments through research papers and conferences"
+                ];
+            }
+            
+            document.getElementById('level').textContent = level;
+            document.getElementById('description').textContent = description;
+            document.getElementById('score').textContent = `Score: ${totalPoints} / ${maxPoints} (${Math.round(percentage)}%)`;
+            
+            const recsList = document.getElementById('recommendations-list');
+            recsList.innerHTML = '';
+            recommendations.forEach((rec, index) => {
+                const div = document.createElement('div');
+                div.className = 'recommendation';
+                div.innerHTML = `
+                    <div class="rec-number">${index + 1}</div>
+                    <div class="rec-text">${rec}</div>
+                `;
+                recsList.appendChild(div);
+            });
+            
+            document.getElementById('quiz-section').classList.add('hidden');
+            document.getElementById('results-section').classList.remove('hidden');
+        }
+
+        function restart() {
+            currentQuestion = 0;
+            answers = [];
+            document.getElementById('quiz-section').classList.remove('hidden');
+            document.getElementById('results-section').classList.add('hidden');
+            loadQuestion();
+        }
+
+        // Load first question on page load
+        loadQuestion();
+    </script>
+</body>
+</html>
