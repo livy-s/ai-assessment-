@@ -125,6 +125,34 @@
             flex: 1;
         }
         
+        .navigation-buttons {
+            margin-top: 24px;
+            display: flex;
+            gap: 12px;
+        }
+        
+        .nav-button {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-button:hover {
+            background: #4b5563;
+        }
+        
+        .nav-button.hidden {
+            display: none;
+        }
+        
         .results {
             text-align: center;
         }
@@ -217,6 +245,44 @@
             flex: 1;
         }
         
+        .resources-section {
+            margin-top: 32px;
+            padding-top: 32px;
+            border-top: 2px solid #e5e7eb;
+            text-align: left;
+        }
+        
+        .resources-section h3 {
+            font-size: 20px;
+            color: #111827;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        
+        .resource-link {
+            display: block;
+            background: #f0f9ff;
+            border: 2px solid #bae6fd;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            text-decoration: none;
+            color: #0369a1;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .resource-link:hover {
+            background: #e0f2fe;
+            border-color: #7dd3fc;
+            transform: translateY(-2px);
+        }
+        
+        .resource-link::after {
+            content: " →";
+            margin-left: 8px;
+        }
+        
         .button {
             background: #4f46e5;
             color: white;
@@ -263,6 +329,12 @@
                     <h2 class="question" id="question"></h2>
                     
                     <div id="options"></div>
+                    
+                    <div class="navigation-buttons">
+                        <button id="prev-button" class="nav-button hidden" onclick="previousQuestion()">
+                            ← Previous
+                        </button>
+                    </div>
                 </div>
             </div>
             
@@ -282,6 +354,16 @@
                     <div class="recommendations">
                         <h3>Recommended Training Path</h3>
                         <div id="recommendations-list"></div>
+                    </div>
+                    
+                    <div class="resources-section">
+                        <h3>AI Training Resources (Beginner to Advanced)</h3>
+                        <a href="https://ai.lilly.com/learn-more-about-ai" target="_blank" class="resource-link">
+                            ai.lilly.com Curated AI Learning Resources
+                        </a>
+                        <a href="https://esi.microsoft.com/landing" target="_blank" class="resource-link">
+                            Microsoft's Enterprise Skills Initiative (available to all Lilly FTEs)
+                        </a>
                     </div>
                     
                     <button class="button" onclick="restart()">
@@ -381,13 +463,21 @@
 
         function loadQuestion() {
             const q = questions[currentQuestion];
-            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            const progress = (currentQuestion / questions.length) * 100;
             
             document.getElementById('question-number').textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
             document.getElementById('progress-percent').textContent = `${Math.round(progress)}% Complete`;
             document.getElementById('progress-fill').style.width = progress + '%';
             document.getElementById('category').textContent = q.category;
             document.getElementById('question').textContent = q.question;
+            
+            // Show/hide previous button
+            const prevButton = document.getElementById('prev-button');
+            if (currentQuestion === 0) {
+                prevButton.classList.add('hidden');
+            } else {
+                prevButton.classList.remove('hidden');
+            }
             
             const optionsDiv = document.getElementById('options');
             optionsDiv.innerHTML = '';
@@ -405,13 +495,25 @@
         }
 
         function selectAnswer(points) {
-            answers.push(points);
+            // If we're revisiting a question, update the answer
+            if (answers[currentQuestion] !== undefined) {
+                answers[currentQuestion] = points;
+            } else {
+                answers.push(points);
+            }
             
             if (currentQuestion < questions.length - 1) {
                 currentQuestion++;
                 loadQuestion();
             } else {
                 showResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
             }
         }
 
